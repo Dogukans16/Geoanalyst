@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geoanalyst</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        /* Modern Tasarım */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            color: #333;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        h2 { color: #203a43; margin-top: 0; font-size: 24px; }
+        input {
+            width: 100%; padding: 12px; margin-bottom: 15px;
+            border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box;
+        }
+        button {
+            width: 100%; padding: 12px; margin-bottom: 10px;
+            background-color: #203a43; color: white; border: none;
+            border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer;
+        }
+        button:hover { background-color: #2c5364; }
+        .btn-secondary { background-color: transparent; color: #203a43; border: 1px solid #203a43; }
+        .btn-secondary:hover { background-color: #f0f5f9; }
+        .btn-danger { background-color: #d9534f; }
+        .btn-danger:hover { background-color: #c9302c; }
+        
+        /* Panel Tasarımı */
+        .dashboard-box {
+            background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px;
+            border-left: 5px solid #203a43; text-align: left;
+        }
+        .dashboard-box p { margin: 10px 0; font-size: 16px; font-weight: 500; }
+        span.highlight { color: #d9534f; font-weight: bold; font-size: 18px; }
+        
+        /* Ekranları gizleyip göstermek için */
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+    <!-- GİRİŞ VE KAYIT EKRANI -->
+    <div class="container" id="auth-ekrani">
+        <h2 id="form-baslik">Geoanalyst'e Giriş Yap</h2>
+        
+        <input type="email" id="email" placeholder="E-posta Adresin">
+        <input type="password" id="sifre" placeholder="Şifre">
+        
+        <!-- Butonlar -->
+        <button id="btnAna" onclick="girisYap()">Giriş Yap</button>
+        <button class="btn-secondary" id="btnDegistir" onclick="formDegistir()">Hesabın yok mu? Kayıt Ol</button>
+    </div>
+
+    <!-- KULLANICI PANELİ (DASHBOARD) -->
+    <div class="container hidden" id="panel-ekrani">
+        <h2>Hoş Geldin!</h2>
+        
+        <div class="dashboard-box">
+            <p>📧 E-posta: <span id="kullanici-mail">-</span></p>
+            <p>💎 Rütbe: <span id="kullanici-rutbe">-</span></p>
+            <p>⚡ Kalan Kredi: <span class="highlight" id="kullanici-kredi">-</span></p>
+        </div>
+        
+        <button onclick="analizYap()">Analiz Yap (1 Kredi Düşer)</button>
+        <button class="btn-danger" onclick="cikisYap()">Çıkış Yap</button>
+    </div>
+
+    <script>
+        const SUPABASE_URL = "https://dkmwtyncxxmgotepgjxr.supabase.co";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRrbXd0eW5jeHhtZ290ZXBnanhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM5NTI4NTMsImV4cCI6MjA5OTUyODg1M30.jWgHdwD62RmDIwna2p7IINOsYePsmCvsg1I3-it40YI";
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let isLoginMode = true; // Sayfa ilk açıldığında Giriş modunda
+
+        // 1. Kayıt / Giriş Formunu Değiştirme
+        function formDegistir() {
+            isLoginMode = !isLoginMode;
+            if (isLoginMode) {
+                document.getElementById("form-baslik").innerText = "Geoanalyst'e Giriş Yap";
+                document.getElementById("btnAna").innerText = "Giriş Yap";
+                document.getElementById("btnAna").setAttribute("onclick", "girisYap()");
+                document.getElementById("btnDegistir").innerText = "Hesabın yok mu? Kayıt Ol";
+            } else {
+                document.getElementById("form-baslik").innerText = "Geoanalyst'e Kayıt Ol";
+                document.getElementById("btnAna").innerText = "Kayıt Ol";
+                document.getElementById("btnAna").setAttribute("onclick", "kayitOl()");
+                document.getElementById("btnDegistir").innerText = "Zaten hesabın var mı? Giriş Yap";
+            }
+        }
+
+        // 2. KAYIT OLMA FONKSİYONU
+        async function kayitOl() {
+            const email = document.getElementById("email").value;
+            const sifre = document.getElementById("sifre").value;
+
+            if (sifre.length < 6) return alert("Şifre en az 6 karakter olmalı!");
+
+            try {
+                // Auth kaydı
+                const { error: authError } = await supabaseClient.auth.signUp({ email, password: sifre });
+                if (authError) throw authError;
+
+                // Veritabanı kaydı
+                await supabaseClient.from('Kullanıcılar').insert([{ email: email, sifre: sifre, abonelik_tipi: 'Normal', kalan_kredi: 10 }]);
+
+                alert("Kayıt başarılı! Lütfen e-postana gidip hesabını doğrula.");
+                formDegistir(); // Doğrulama yapması için Giriş ekranına atıyoruz
+            } catch (error) {
+                alert("Kayıt Hatası: " + error.message);
+            }
+        }
+
+        // 3. GİRİŞ YAPMA FONKSİYONU
+        async function girisYap() {
+            const email = document.getElementById("email").value;
+            const sifre = document.getElementById("sifre").value;
+
+            try {
+                // Supabase ile giriş denemesi
+                const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password: sifre });
+                if (error) throw error;
+
+                // Giriş başarılıysa bilgileri çek
+                bilgileriGetir(email);
+            } catch (error) {
+                alert("Giriş Hatası: Bilgilerini veya e-posta doğrulamanı kontrol et.");
+            }
+        }
+
+        // 4. VERİTABANINDAN KREDİ VE RÜTBEYİ ÇEKME
+        async function bilgileriGetir(email) {
+            const { data, error } = await supabaseClient
+                .from('Kullanıcılar')
+                .select('abonelik_tipi, kalan_kredi')
+                .eq('email', email)
+                .single(); // Sadece bu kullanıcının verisini getir
+
+            if (error) {
+                console.error("Veri çekme hatası:", error);
+            } else {
+                // Ekrana verileri yazdır ve paneli göster
+                document.getElementById("kullanici-mail").innerText = email;
+                document.getElementById("kullanici-rutbe").innerText = data.abonelik_tipi;
+                document.getElementById("kullanici-kredi").innerText = data.kalan_kredi;
+
+                document.getElementById("auth-ekrani").classList.add("hidden");
+                document.getElementById("panel-ekrani").classList.remove("hidden");
+            }
+        }
+
+        // 5. ÇIKIŞ YAP
+        async function cikisYap() {
+            await supabaseClient.auth.signOut();
+            document.getElementById("email").value = "";
+            document.getElementById("sifre").value = "";
+            document.getElementById("panel-ekrani").classList.add("hidden");
+            document.getElementById("auth-ekrani").classList.remove("hidden");
+        }
+
+        // Öylesine bir buton testi
+        function analizYap() {
+            alert("Yakında! Bu butona bastığında kredin 1 düşecek.");
+        }
+    </script>
+</body>
+</html>
