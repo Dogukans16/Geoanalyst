@@ -3,39 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <title>Geoanalyst Kayıt</title>
-    <!-- Supabase kütüphanesi -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
     <h2>Geoanalyst'e Hoş Geldin</h2>
-    <input type="email" id="email" placeholder="E-posta"><br>
-    <input type="password" id="sifre" placeholder="Şifre"><br>
-    <button onclick="webdenKayitOl()">Kayıt Ol</button>
+    
+    <!-- 1. Aşama: E-posta girişi -->
+    <div id="adim1">
+        <input type="email" id="email" placeholder="E-posta"><br>
+        <button onclick="kodGonder()">Kod Gönder</button>
+    </div>
+
+    <!-- 2. Aşama: Doğrulama ve Kayıt (Başta gizli) -->
+    <div id="adim2" style="display:none;">
+        <input type="text" id="gelenKod" placeholder="E-postana gelen kod">
+        <input type="password" id="sifre" placeholder="Şifre"><br>
+        <button onclick="kaydiTamamla()">Kaydı Tamamla</button>
+    </div>
 
     <script>
-        // --- BURAYI DOLDUR ---
         const SUPABASE_URL = "https://dkmwtyncxxmgotepgjxr.supabase.co";
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRrbXd0eW5jeHhtZ290ZXBnanhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM5NTI4NTMsImV4cCI6MjA5OTUyODg1M30.jWgHdwD62RmDIwna2p7IINOsYePsmCvsg1I3-it40YI"; 
-        // ---------------------
-
         const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        async function webdenKayitOl() {
+        // Basit bir geçici kod (Gerçek mail gönderimi için ilerde SMTP bağlarız)
+        let dogruKod = "123456"; 
+
+        function kodGonder() {
+            alert("Sistem test modunda: Kodun 123456 olarak belirlendi.");
+            document.getElementById("adim1").style.display = "none";
+            document.getElementById("adim2").style.display = "block";
+        }
+
+        async function kaydiTamamla() {
+            const kod = document.getElementById("gelenKod").value;
             const eposta = document.getElementById("email").value;
             const sifre = document.getElementById("sifre").value;
 
-            console.log("Kayıt denemesi başladı...");
+            // Önce kod kontrolü
+            if (kod !== dogruKod) {
+                alert("Hatalı kod girdin!");
+                return;
+            }
 
+            // Kod doğruysa, şimdi veritabanına kayıt at
             const { data, error } = await supabase
                 .from('Kullanıcılar')
                 .insert([{ email: eposta, sifre: sifre, abonelik_tipi: 'Normal', kalan_kredi: 10 }]);
 
-            if (error) {
-                console.error("Hata:", error);
-                alert("Hata: " + error.message);
-            } else {
-                alert("Başarıyla kayıt oldun!");
-            }
+            if (error) alert("Kayıt hatası: " + error.message);
+            else alert("Başarıyla kayıt oldun!");
         }
     </script>
 </body>
