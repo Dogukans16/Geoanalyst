@@ -1,11 +1,39 @@
 <!DOCTYPE html>
-<html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
 <body>
-    <button id="testBtn">Test Butonu</button>
+    <h2>Geoanalyst Kayıt</h2>
+    <input type="email" id="email" placeholder="E-posta">
+    <input type="password" id="sifre" placeholder="Şifre">
+    <button id="btnKayit" onclick="kayitOl()">Kayıt Ol</button>
+
     <script>
-        document.getElementById("testBtn").onclick = function() {
-            alert("Kod çalışıyor!");
-        };
+        // Supabase bağlantısı
+        const SUPABASE_URL = "https://dkmwtyncxxmgotepgjxr.supabase.co";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRrbXd0eW5jeHhtZ290ZXBnanhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM5NTI4NTMsImV4cCI6MjA5OTUyODg1M30.jWgHdwD62RmDIwna2p7IINOsYePsmCvsg1I3-it40YI";
+        
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // Fonksiyon burada net bir şekilde tanımlı
+        async function kayitOl() {
+            const email = document.getElementById("email").value;
+            const sifre = document.getElementById("sifre").value;
+
+            console.log("Kayıt işlemi tetiklendi...");
+
+            const { data, error } = await supabase
+                .from('Kullanıcılar')
+                .insert([{ email: email, sifre: sifre, abonelik_tipi: 'Normal', kalan_kredi: 10 }]);
+
+            if (error) {
+                alert("Hata: " + error.message);
+            } else {
+                alert("Başarıyla kayıt oldun!");
+            }
+        }
     </script>
 </body>
 </html>
