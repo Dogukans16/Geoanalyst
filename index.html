@@ -3,181 +3,346 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Geoanalyst</title>
+    <title>Geoanalyst - Coğrafi Analiz ve Keşif</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        /* Modern Tasarım */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+        
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            color: #333;
+            font-family: 'Inter', system_ui, sans-serif;
         }
-        .container {
-            background-color: #ffffff;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
+        .title-font {
+            font-family: 'Space Grotesk', sans-serif;
         }
-        h2 { color: #203a43; margin-top: 0; font-size: 24px; }
-        input {
-            width: 100%; padding: 12px; margin-bottom: 15px;
-            border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box;
+        .hero-bg {
+            background: linear-gradient(135deg, #0f172a 0%, #1e2937 100%);
         }
-        button {
-            width: 100%; padding: 12px; margin-bottom: 10px;
-            background-color: #203a43; color: white; border: none;
-            border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer;
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
         }
-        button:hover { background-color: #2c5364; }
-        .btn-secondary { background-color: transparent; color: #203a43; border: 1px solid #203a43; }
-        .btn-secondary:hover { background-color: #f0f5f9; }
-        .btn-danger { background-color: #d9534f; }
-        .btn-danger:hover { background-color: #c9302c; }
-        
-        /* Panel Tasarımı */
-        .dashboard-box {
-            background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px;
-            border-left: 5px solid #203a43; text-align: left;
+        .card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .dashboard-box p { margin: 10px 0; font-size: 16px; font-weight: 500; }
-        span.highlight { color: #d9534f; font-weight: bold; font-size: 18px; }
-        
-        /* Ekranları gizleyip göstermek için */
-        .hidden { display: none; }
+        .card-hover:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
     </style>
 </head>
-<body>
+<body class="bg-zinc-950 text-white min-h-screen">
 
-    <!-- GİRİŞ VE KAYIT EKRANI -->
-    <div class="container" id="auth-ekrani">
-        <h2 id="form-baslik">Geoanalyst'e Giriş Yap</h2>
-        
-        <input type="email" id="email" placeholder="E-posta Adresin">
-        <input type="password" id="sifre" placeholder="Şifre">
-        
-        <!-- Butonlar -->
-        <button id="btnAna" onclick="girisYap()">Giriş Yap</button>
-        <button class="btn-secondary" id="btnDegistir" onclick="formDegistir()">Hesabın yok mu? Kayıt Ol</button>
+    <!-- NAVBAR -->
+    <nav class="border-b border-zinc-800 bg-zinc-950/80 backdrop-blur-md fixed w-full z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 bg-emerald-500 rounded-xl flex items-center justify-center text-xl font-bold">🌍</div>
+                <span class="title-font text-2xl font-semibold tracking-tight">Geoanalyst</span>
+            </div>
+            
+            <div class="hidden md:flex items-center gap-8 text-sm">
+                <a href="#" onclick="showSection('home')" class="hover:text-emerald-400 transition-colors">Ana Sayfa</a>
+                <a href="#" onclick="showSection('plans')" class="hover:text-emerald-400 transition-colors">Abonelikler</a>
+                <a href="#" onclick="showSection('download')" class="hover:text-emerald-400 transition-colors">Uygulamayı İndir</a>
+            </div>
+            
+            <div id="nav-auth" class="flex items-center gap-3"></div>
+        </div>
+    </nav>
+
+    <div class="pt-20"></div>
+
+    <!-- HOME / LANDING -->
+    <div id="home-section" class="hero-bg min-h-screen flex items-center">
+        <div class="max-w-7xl mx-auto px-6 py-20 grid md:grid-cols-2 gap-12 items-center">
+            <div>
+                <div class="inline-flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full text-sm mb-6">
+                    <span class="relative flex h-3 w-3">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                    </span>
+                    Yeni Özellikler Eklendi
+                </div>
+                <h1 class="title-font text-6xl md:text-7xl font-bold leading-tight tracking-tighter mb-6">
+                    Coğrafyanı <span class="text-emerald-400">Keşfet</span>
+                </h1>
+                <p class="text-xl text-zinc-400 mb-10 max-w-md">
+                    Güçlü coğrafi analiz araçları ile dünyayı parmaklarınızın ucunda keşfedin.
+                </p>
+                <div class="flex flex-wrap gap-4">
+                    <button onclick="showAuthModal()" 
+                            class="px-8 py-4 bg-emerald-600 hover:bg-emerald-500 transition-colors rounded-2xl font-semibold text-lg flex items-center gap-3">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Hemen Giriş Yap
+                    </button>
+                    <button onclick="showSection('download')" 
+                            class="px-8 py-4 border border-white/30 hover:bg-white/10 transition-colors rounded-2xl font-semibold text-lg flex items-center gap-3">
+                        <i class="fas fa-download"></i>
+                        Uygulamayı İndir
+                    </button>
+                </div>
+            </div>
+            <div class="hidden md:block">
+                <img src="https://picsum.photos/id/1015/600/420" alt="Geoanalyst" class="rounded-3xl shadow-2xl">
+            </div>
+        </div>
     </div>
 
-    <!-- KULLANICI PANELİ (DASHBOARD) -->
-    <div class="container hidden" id="panel-ekrani">
-        <h2>Hoş Geldin!</h2>
-        
-        <div class="dashboard-box">
-            <p>📧 E-posta: <span id="kullanici-mail">-</span></p>
-            <p>💎 Rütbe: <span id="kullanici-rutbe">-</span></p>
-            <p>⚡ Kalan Kredi: <span class="highlight" id="kullanici-kredi">-</span></p>
+    <!-- AUTH MODAL -->
+    <div id="auth-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-[100]">
+        <div class="bg-zinc-900 rounded-3xl w-full max-w-md mx-4 overflow-hidden">
+            <div class="px-8 pt-8 pb-4 border-b border-zinc-800 flex justify-between items-center">
+                <h2 id="modal-title" class="text-2xl font-semibold">Giriş Yap</h2>
+                <button onclick="hideAuthModal()" class="text-3xl text-zinc-400 hover:text-white">×</button>
+            </div>
+            <div class="p-8">
+                <div class="space-y-5">
+                    <div>
+                        <label class="block text-sm text-zinc-400 mb-1">E-posta</label>
+                        <input id="modal-email" type="email" class="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4 focus:outline-none focus:border-emerald-500" placeholder="ornek@email.com">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-zinc-400 mb-1">Şifre</label>
+                        <input id="modal-password" type="password" class="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4 focus:outline-none focus:border-emerald-500" placeholder="••••••••">
+                    </div>
+                </div>
+                
+                <button id="main-auth-btn" onclick="handleAuth()" class="w-full mt-8 py-4 bg-emerald-600 hover:bg-emerald-500 rounded-2xl font-semibold text-lg">
+                    Giriş Yap
+                </button>
+                
+                <div class="mt-6 text-center">
+                    <button onclick="toggleAuthMode()" id="switch-btn" class="text-emerald-400 hover:text-emerald-300">Hesabın yok mu? Kayıt Ol</button>
+                </div>
+                
+                <div class="mt-8 text-center">
+                    <button onclick="resetPassword()" class="text-zinc-400 hover:text-white text-sm">Şifremi Unuttum</button>
+                </div>
+            </div>
         </div>
-        
-        <button onclick="analizYap()">Analiz Yap (1 Kredi Düşer)</button>
-        <button class="btn-danger" onclick="cikisYap()">Çıkış Yap</button>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div id="dashboard-section" class="hidden max-w-5xl mx-auto px-6 py-12">
+        <div class="flex justify-between items-start mb-10">
+            <div>
+                <h1 class="text-4xl font-semibold title-font">Hoş geldin, <span id="dash-name" class="text-emerald-400"></span></h1>
+            </div>
+            <div class="flex gap-3">
+                <button onclick="watchAdForCredit()" class="px-6 py-3 bg-amber-500 hover:bg-amber-400 text-black font-semibold rounded-2xl flex items-center gap-2">
+                    <i class="fas fa-ad"></i> Reklam İzle + Kredi
+                </button>
+                <button onclick="logout()" class="px-6 py-3 border border-red-500/30 text-red-400 hover:bg-red-500/10 rounded-2xl">Çıkış Yap</button>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-zinc-900 rounded-3xl p-8 card-hover">
+                <p class="text-emerald-400">E-posta</p>
+                <p id="dash-email" class="font-mono text-lg break-all"></p>
+                <p class="mt-6 text-emerald-400">Abonelik</p>
+                <p id="dash-sub" class="font-semibold text-2xl"></p>
+                <p class="mt-6 text-emerald-400">Kalan Kredi</p>
+                <p id="dash-credit" class="text-5xl font-bold text-yellow-400"></p>
+            </div>
+
+            <div class="md:col-span-2 bg-zinc-900 rounded-3xl p-8 card-hover">
+                <h3 class="text-xl font-semibold mb-6">Hızlı İşlemler</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <button onclick="startAnalysis()" class="h-32 bg-gradient-to-br from-emerald-600 to-teal-600 rounded-3xl p-6 text-left hover:brightness-110">
+                        <span class="text-3xl">📊</span><br>
+                        <span class="font-semibold text-lg">Yeni Analiz Başlat</span>
+                    </button>
+                    <button onclick="changePasswordModal()" class="h-32 bg-zinc-800 hover:bg-zinc-700 rounded-3xl p-6 text-left">
+                        <span class="text-3xl">🔑</span><br>
+                        <span class="font-semibold text-lg">Şifre Değiştir</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Abonelik Planları -->
+        <div class="mt-16">
+            <h2 class="text-3xl font-semibold mb-8 text-center">Abonelik Planları</h2>
+            <div class="grid md:grid-cols-3 gap-6" id="plans-container"></div>
+        </div>
+    </div>
+
+    <!-- PLANS SECTION -->
+    <div id="plans-section" class="hidden max-w-6xl mx-auto px-6 py-20">
+        <h2 class="text-5xl title-font font-bold text-center mb-16">Planlarımızı İncele</h2>
+        <div class="grid md:grid-cols-3 gap-8" id="standalone-plans"></div>
+    </div>
+
+    <!-- DOWNLOAD SECTION -->
+    <div id="download-section" class="hidden max-w-4xl mx-auto px-6 py-20 text-center">
+        <h2 class="text-5xl title-font font-bold mb-8">Uygulamayı İndir</h2>
+        <button onclick="fakeDownload()" class="inline-flex items-center gap-4 bg-white text-black px-10 py-6 rounded-3xl text-xl font-semibold hover:scale-105 transition">
+            <i class="fab fa-google-play text-5xl"></i>
+            <div>Google Play'den İndir</div>
+        </button>
+    </div>
+
+    <!-- Password Reset Modal -->
+    <div id="password-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-[110]">
+        <div class="bg-zinc-900 rounded-3xl p-8 max-w-md w-full mx-4">
+            <h3 class="text-xl mb-6">Şifre Değiştir</h3>
+            <input id="change-email" type="email" class="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4 mb-4" placeholder="E-posta">
+            <button onclick="sendPasswordReset()" class="w-full py-4 bg-emerald-600 rounded-2xl">Doğrulama Linki Gönder</button>
+            <button onclick="hidePasswordModal()" class="w-full mt-3 py-3 text-zinc-400">İptal</button>
+        </div>
     </div>
 
     <script>
         const SUPABASE_URL = "https://dkmwtyncxxmgotepgjxr.supabase.co";
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRrbXd0eW5jeHhtZ290ZXBnanhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM5NTI4NTMsImV4cCI6MjA5OTUyODg1M30.jWgHdwD62RmDIwna2p7IINOsYePsmCvsg1I3-it40YI";
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        let isLoginMode = true; // Sayfa ilk açıldığında Giriş modunda
+        let currentUser = null;
+        let isLoginMode = true;
 
-        // 1. Kayıt / Giriş Formunu Değiştirme
-        function formDegistir() {
+        function showSection(section) {
+            document.querySelectorAll('#home-section, #dashboard-section, #plans-section, #download-section').forEach(el => el.classList.add('hidden'));
+            document.getElementById(section + '-section').classList.remove('hidden');
+        }
+
+        function showAuthModal() {
+            document.getElementById('auth-modal').classList.remove('hidden');
+            isLoginMode = true;
+            updateAuthUI();
+        }
+
+        function hideAuthModal() {
+            document.getElementById('auth-modal').classList.add('hidden');
+        }
+
+        function updateAuthUI() {
+            document.getElementById('modal-title').textContent = isLoginMode ? 'Giriş Yap' : 'Kayıt Ol';
+            document.getElementById('main-auth-btn').textContent = isLoginMode ? 'Giriş Yap' : 'Kayıt Ol';
+            document.getElementById('switch-btn').textContent = isLoginMode ? 'Hesabın yok mu? Kayıt Ol' : 'Zaten hesabın var mı? Giriş Yap';
+        }
+
+        function toggleAuthMode() {
             isLoginMode = !isLoginMode;
-            if (isLoginMode) {
-                document.getElementById("form-baslik").innerText = "Geoanalyst'e Giriş Yap";
-                document.getElementById("btnAna").innerText = "Giriş Yap";
-                document.getElementById("btnAna").setAttribute("onclick", "girisYap()");
-                document.getElementById("btnDegistir").innerText = "Hesabın yok mu? Kayıt Ol";
-            } else {
-                document.getElementById("form-baslik").innerText = "Geoanalyst'e Kayıt Ol";
-                document.getElementById("btnAna").innerText = "Kayıt Ol";
-                document.getElementById("btnAna").setAttribute("onclick", "kayitOl()");
-                document.getElementById("btnDegistir").innerText = "Zaten hesabın var mı? Giriş Yap";
-            }
+            updateAuthUI();
         }
 
-        // 2. KAYIT OLMA FONKSİYONU
-        async function kayitOl() {
-            const email = document.getElementById("email").value;
-            const sifre = document.getElementById("sifre").value;
+        async function handleAuth() {
+            const email = document.getElementById('modal-email').value.trim();
+            const password = document.getElementById('modal-password').value.trim();
 
-            if (sifre.length < 6) return alert("Şifre en az 6 karakter olmalı!");
+            if (!email || !password) return alert("E-posta ve şifre gereklidir!");
 
             try {
-                // Auth kaydı
-                const { error: authError } = await supabaseClient.auth.signUp({ email, password: sifre });
-                if (authError) throw authError;
-
-                // Veritabanı kaydı
-                await supabaseClient.from('Kullanıcılar').insert([{ email: email, sifre: sifre, abonelik_tipi: 'Normal', kalan_kredi: 10 }]);
-
-                alert("Kayıt başarılı! Lütfen e-postana gidip hesabını doğrula.");
-                formDegistir(); // Doğrulama yapması için Giriş ekranına atıyoruz
-            } catch (error) {
-                alert("Kayıt Hatası: " + error.message);
+                if (isLoginMode) {
+                    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+                    if (error) throw error;
+                    currentUser = data.user;
+                    hideAuthModal();
+                    loadDashboard();
+                } else {
+                    const { error } = await supabase.auth.signUp({ email, password });
+                    if (error) throw error;
+                    await supabase.from('Kullanıcılar').insert([{ email, abonelik_tipi: 'Normal', kalan_kredi: 20 }]);
+                    alert("Kayıt başarılı! E-postanı kontrol et ve hesabı doğrula.");
+                    hideAuthModal();
+                }
+            } catch (e) {
+                alert("Hata: " + e.message);
             }
         }
 
-        // 3. GİRİŞ YAPMA FONKSİYONU
-        async function girisYap() {
-            const email = document.getElementById("email").value;
-            const sifre = document.getElementById("sifre").value;
+        async function loadDashboard() {
+            if (!currentUser) return;
+            showSection('dashboard');
+            document.getElementById('nav-auth').innerHTML = `<button onclick="logout()" class="px-5 py-2 border border-red-500 text-red-400 rounded-2xl">Çıkış</button>`;
 
-            try {
-                // Supabase ile giriş denemesi
-                const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password: sifre });
-                if (error) throw error;
+            const { data: profile } = await supabase.from('Kullanıcılar').select('*').eq('email', currentUser.email).single();
 
-                // Giriş başarılıysa bilgileri çek
-                bilgileriGetir(email);
-            } catch (error) {
-                alert("Giriş Hatası: Bilgilerini veya e-posta doğrulamanı kontrol et.");
-            }
+            document.getElementById('dash-email').textContent = currentUser.email;
+            document.getElementById('dash-name').textContent = currentUser.email.split('@')[0];
+            document.getElementById('dash-sub').textContent = profile?.abonelik_tipi || 'Normal';
+            document.getElementById('dash-credit').textContent = profile?.kalan_kredi || 0;
+
+            renderPlans('plans-container');
         }
 
-        // 4. VERİTABANINDAN KREDİ VE RÜTBEYİ ÇEKME
-        async function bilgileriGetir(email) {
-            const { data, error } = await supabaseClient
-                .from('Kullanıcılar')
-                .select('abonelik_tipi, kalan_kredi')
-                .eq('email', email)
-                .single(); // Sadece bu kullanıcının verisini getir
+        async function logout() {
+            await supabase.auth.signOut();
+            currentUser = null;
+            showSection('home');
+        }
 
-            if (error) {
-                console.error("Veri çekme hatası:", error);
+        async function watchAdForCredit() {
+            if (!currentUser) return;
+            if (!confirm("Reklam izleyip 10 kredi kazanmak istiyor musun?")) return;
+
+            const { data: profile } = await supabase.from('Kullanıcılar').select('kalan_kredi').eq('email', currentUser.email).single();
+            const newCredit = (profile?.kalan_kredi || 0) + 10;
+
+            await supabase.from('Kullanıcılar').update({ kalan_kredi: newCredit }).eq('email', currentUser.email);
+            alert(`+10 kredi eklendi! Yeni bakiye: ${newCredit}`);
+            loadDashboard();
+        }
+
+        function startAnalysis() {
+            alert("Analiz başlatılıyor... (1 kredi düşecek - yakında tam entegre olacak)");
+        }
+
+        function changePasswordModal() {
+            document.getElementById('password-modal').classList.remove('hidden');
+            document.getElementById('change-email').value = currentUser?.email || '';
+        }
+
+        function hidePasswordModal() {
+            document.getElementById('password-modal').classList.add('hidden');
+        }
+
+        async function sendPasswordReset() {
+            const email = document.getElementById('change-email').value.trim();
+            if (!email) return alert("E-posta giriniz");
+            const { error } = await supabase.auth.resetPasswordForEmail(email);
+            if (error) alert(error.message);
+            else alert("Şifre sıfırlama linki e-postana gönderildi!");
+            hidePasswordModal();
+        }
+
+        function resetPassword() {
+            const email = document.getElementById('modal-email').value.trim();
+            if (email) sendPasswordReset();
+            else alert("Önce e-posta girin");
+        }
+
+        function renderPlans(containerId) {
+            const html = `
+                <div class="bg-zinc-900 rounded-3xl p-8 card-hover">Ekonomik<br><button onclick="subscribe('Ekonomik')" class="mt-4 w-full py-3 border">Satın Al</button></div>
+                <div class="bg-zinc-900 rounded-3xl p-8 card-hover border-2 border-emerald-500">Normal (Popüler)<br><button onclick="subscribe('Normal')" class="mt-4 w-full py-3 bg-emerald-600">Satın Al</button></div>
+                <div class="bg-zinc-900 rounded-3xl p-8 card-hover">Premium<br><button onclick="subscribe('Premium')" class="mt-4 w-full py-3 border">Satın Al</button></div>
+            `;
+            document.getElementById(containerId).innerHTML = html;
+        }
+
+        function subscribe(plan) {
+            alert(plan + " planı için ödeme sayfasına yönlendiriliyorsun (yakında eklenecek)");
+        }
+
+        function fakeDownload() {
+            alert("Google Play'e yönlendiriliyorsun (Simülasyon)");
+        }
+
+        async function init() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) {
+                currentUser = session.user;
+                loadDashboard();
             } else {
-                // Ekrana verileri yazdır ve paneli göster
-                document.getElementById("kullanici-mail").innerText = email;
-                document.getElementById("kullanici-rutbe").innerText = data.abonelik_tipi;
-                document.getElementById("kullanici-kredi").innerText = data.kalan_kredi;
-
-                document.getElementById("auth-ekrani").classList.add("hidden");
-                document.getElementById("panel-ekrani").classList.remove("hidden");
+                showSection('home');
             }
         }
 
-        // 5. ÇIKIŞ YAP
-        async function cikisYap() {
-            await supabaseClient.auth.signOut();
-            document.getElementById("email").value = "";
-            document.getElementById("sifre").value = "";
-            document.getElementById("panel-ekrani").classList.add("hidden");
-            document.getElementById("auth-ekrani").classList.remove("hidden");
-        }
-
-        // Öylesine bir buton testi
-        function analizYap() {
-            alert("Yakında! Bu butona bastığında kredin 1 düşecek.");
-        }
+        window.onload = init;
     </script>
 </body>
 </html>
