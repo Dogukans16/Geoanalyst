@@ -9,116 +9,79 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
-        
-        body {
-            font-family: 'Inter', system_ui, sans-serif;
-        }
-        .title-font {
-            font-family: 'Space Grotesk', sans-serif;
-        }
-        .hero-bg {
-            background: linear-gradient(135deg, #0f172a 0%, #1e2937 100%);
-        }
-        .glass {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(12px);
-        }
-        .card-hover {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .card-hover:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-        }
+        body { font-family: 'Inter', system_ui, sans-serif; }
+        .title-font { font-family: 'Space Grotesk', sans-serif; }
+        .hero-bg { background: linear-gradient(135deg, #0f172a 0%, #1e2937 100%); }
     </style>
 </head>
 <body class="bg-zinc-950 text-white min-h-screen">
+
+    <!-- ADBLOCK ENGELLEYİCİ EKRAN (Varsayılan olarak gizli) -->
+    <div id="adblock-overlay" class="hidden fixed inset-0 z-[9999] bg-zinc-950/95 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center">
+        <div class="w-24 h-24 bg-red-500/10 text-red-500 rounded-3xl flex items-center justify-center text-5xl mb-8 shadow-[0_0_50px_rgba(239,68,68,0.2)]">
+            <i class="fas fa-shield-alt"></i>
+        </div>
+        <h2 class="text-5xl font-bold text-white mb-6">Reklam Engelleyici Tespit Edildi!</h2>
+        <p class="text-xl text-zinc-400 max-w-2xl mb-10 leading-relaxed">
+            Geoanalyst sistemini kullanmaya devam etmek ve analiz yapabilmek için lütfen <span class="text-white font-semibold">AdBlock veya benzeri reklam engelleyicinizi</span> bu site için kapatın. Sistemimizin ücretsiz kalabilmesi reklam gelirlerine bağlıdır.
+        </p>
+        <button onclick="window.location.reload()" class="px-10 py-5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl font-bold text-xl transition shadow-lg">
+            Engelleyiciyi Kapattım, Yenile
+        </button>
+    </div>
 
     <!-- NAVBAR -->
     <nav class="border-b border-zinc-800 bg-zinc-950/80 backdrop-blur-md fixed w-full z-50">
         <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <div class="w-9 h-9 bg-emerald-500 rounded-xl flex items-center justify-center text-xl font-bold">🌍</div>
-                <span class="title-font text-2xl font-semibold tracking-tight">Geoanalyst</span>
+                <span class="title-font text-2xl font-semibold">Geoanalyst</span>
             </div>
-            
-            <div class="hidden md:flex items-center gap-8 text-sm">
-                <a href="#" onclick="showSection('home')" class="hover:text-emerald-400 transition-colors">Ana Sayfa</a>
-                <a href="#" onclick="showSection('plans')" class="hover:text-emerald-400 transition-colors">Abonelikler</a>
-                <a href="#" onclick="showSection('download')" class="hover:text-emerald-400 transition-colors">Uygulamayı İndir</a>
+            <div class="flex gap-8 text-sm items-center">
+                <a href="#" onclick="showSection('home')" class="hover:text-emerald-400 transition">Ana Sayfa</a>
+                <a href="#" onclick="showSection('plans')" class="hover:text-emerald-400 transition">Abonelikler</a>
+                <a href="#" onclick="showSection('download')" class="hover:text-emerald-400 transition">Uygulamayı İndir</a>
             </div>
-            
-            <div id="nav-auth" class="flex items-center gap-3"></div>
+            <div id="nav-auth"></div>
         </div>
     </nav>
 
     <div class="pt-20"></div>
 
-    <!-- HOME / LANDING -->
+    <!-- HOME -->
     <div id="home-section" class="hero-bg min-h-screen flex items-center">
-        <div class="max-w-7xl mx-auto px-6 py-20 grid md:grid-cols-2 gap-12 items-center">
+        <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
             <div>
-                <div class="inline-flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full text-sm mb-6">
-                    <span class="relative flex h-3 w-3">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
-                    </span>
-                    Yeni Özellikler Eklendi
-                </div>
-                <h1 class="title-font text-6xl md:text-7xl font-bold leading-tight tracking-tighter mb-6">
-                    Coğrafyanı <span class="text-emerald-400">Keşfet</span>
-                </h1>
-                <p class="text-xl text-zinc-400 mb-10 max-w-md">
-                    Güçlü coğrafi analiz araçları ile dünyayı parmaklarınızın ucunda keşfedin.
-                </p>
-                <div class="flex flex-wrap gap-4">
-                    <button onclick="showAuthModal()" 
-                            class="px-8 py-4 bg-emerald-600 hover:bg-emerald-500 transition-colors rounded-2xl font-semibold text-lg flex items-center gap-3">
-                        <i class="fas fa-sign-in-alt"></i>
-                        Hemen Giriş Yap
-                    </button>
-                    <button onclick="showSection('download')" 
-                            class="px-8 py-4 border border-white/30 hover:bg-white/10 transition-colors rounded-2xl font-semibold text-lg flex items-center gap-3">
-                        <i class="fas fa-download"></i>
-                        Uygulamayı İndir
-                    </button>
+                <h1 class="title-font text-6xl font-bold leading-tight">Coğrafyanı <span class="text-emerald-400">Keşfet</span></h1>
+                <p class="mt-6 text-xl text-zinc-400">Güçlü coğrafi analiz araçları ile dünyayı keşfet.</p>
+                <div class="mt-10 flex gap-4">
+                    <button onclick="showAuthModal()" class="px-8 py-4 bg-emerald-600 hover:bg-emerald-500 transition rounded-2xl font-semibold">Hemen Giriş Yap</button>
+                    <button onclick="showSection('download')" class="px-8 py-4 border border-white/30 hover:bg-white/10 transition rounded-2xl font-semibold">Uygulamayı İndir</button>
                 </div>
             </div>
-            <div class="hidden md:block">
-                <img src="https://picsum.photos/id/1015/600/420" alt="Geoanalyst" class="rounded-3xl shadow-2xl">
-            </div>
+            <img src="https://picsum.photos/id/1015/600/420" class="rounded-3xl shadow-2xl" alt="App">
         </div>
     </div>
 
-    <!-- AUTH MODAL -->
-    <div id="auth-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-[100]">
-        <div class="bg-zinc-900 rounded-3xl w-full max-w-md mx-4 overflow-hidden">
-            <div class="px-8 pt-8 pb-4 border-b border-zinc-800 flex justify-between items-center">
-                <h2 id="modal-title" class="text-2xl font-semibold">Giriş Yap</h2>
-                <button onclick="hideAuthModal()" class="text-3xl text-zinc-400 hover:text-white">×</button>
+    <!-- AUTH MODAL (SADECE GİRİŞ) -->
+    <div id="auth-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50">
+        <div class="bg-zinc-900 rounded-3xl w-full max-w-md p-8 shadow-2xl border border-zinc-800">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-3xl font-bold">Giriş Yap</h2>
+                <button onclick="document.getElementById('auth-modal').classList.add('hidden')" class="text-zinc-400 hover:text-white text-3xl leading-none">&times;</button>
             </div>
-            <div class="p-8">
-                <div class="space-y-5">
-                    <div>
-                        <label class="block text-sm text-zinc-400 mb-1">E-posta</label>
-                        <input id="modal-email" type="email" class="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4 focus:outline-none focus:border-emerald-500" placeholder="ornek@email.com">
-                    </div>
-                    <div>
-                        <label class="block text-sm text-zinc-400 mb-1">Şifre</label>
-                        <input id="modal-password" type="password" class="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4 focus:outline-none focus:border-emerald-500" placeholder="••••••••">
-                    </div>
-                </div>
+            
+            <div id="auth-inputs">
+                <input id="modal-email" type="email" placeholder="E-posta" class="w-full p-4 bg-zinc-800 rounded-2xl mb-4 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                <input id="modal-password" type="password" placeholder="Şifre" class="w-full p-4 bg-zinc-800 rounded-2xl mb-6 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                <button onclick="handleAuth()" class="w-full py-4 bg-emerald-600 hover:bg-emerald-500 transition rounded-2xl font-semibold text-lg mb-6">Giriş Yap</button>
                 
-                <button id="main-auth-btn" onclick="handleAuth()" class="w-full mt-8 py-4 bg-emerald-600 hover:bg-emerald-500 rounded-2xl font-semibold text-lg">
-                    Giriş Yap
-                </button>
-                
-                <div class="mt-6 text-center">
-                    <button onclick="toggleAuthMode()" id="switch-btn" class="text-emerald-400 hover:text-emerald-300">Hesabın yok mu? Kayıt Ol</button>
-                </div>
-                
-                <div class="mt-8 text-center">
-                    <button onclick="resetPassword()" class="text-zinc-400 hover:text-white text-sm">Şifremi Unuttum</button>
+                <!-- Kayıt Yönlendirmesi -->
+                <div class="p-4 bg-zinc-950 border border-zinc-800 rounded-2xl text-center">
+                    <p class="text-zinc-400 text-sm mb-2">Henüz hesabınız yok mu?</p>
+                    <button onclick="document.getElementById('auth-modal').classList.add('hidden'); showSection('download');" class="text-emerald-400 font-medium hover:underline flex items-center justify-center gap-2 w-full">
+                        <i class="fas fa-download"></i> Kayıt olmak için uygulamayı indirin
+                    </button>
                 </div>
             </div>
         </div>
@@ -126,223 +89,210 @@
 
     <!-- DASHBOARD -->
     <div id="dashboard-section" class="hidden max-w-5xl mx-auto px-6 py-12">
-        <div class="flex justify-between items-start mb-10">
-            <div>
-                <h1 class="text-4xl font-semibold title-font">Hoş geldin, <span id="dash-name" class="text-emerald-400"></span></h1>
+        <h1 class="text-4xl font-bold">Hoş geldin, <span id="dash-name" class="text-emerald-400"></span></h1>
+        <p id="dash-email" class="text-zinc-400 mb-8"></p>
+
+        <div class="grid md:grid-cols-3 gap-6">
+            <div class="bg-zinc-900 p-8 rounded-3xl border border-zinc-800 relative overflow-hidden">
+                <div class="absolute -right-4 -top-4 text-zinc-800 text-7xl"><i class="fas fa-gem"></i></div>
+                <p class="text-emerald-400 font-medium relative z-10">Abonelik Durumu</p>
+                <p id="dash-sub" class="text-3xl font-bold mt-2 relative z-10">Yükleniyor...</p>
             </div>
-            <div class="flex gap-3">
-                <button onclick="watchAdForCredit()" class="px-6 py-3 bg-amber-500 hover:bg-amber-400 text-black font-semibold rounded-2xl flex items-center gap-2">
-                    <i class="fas fa-ad"></i> Reklam İzle + Kredi
+            <div class="bg-zinc-900 p-8 rounded-3xl border border-zinc-800 relative overflow-hidden">
+                <div class="absolute -right-4 -top-4 text-zinc-800 text-7xl"><i class="fas fa-coins"></i></div>
+                <p class="text-emerald-400 font-medium relative z-10">Kalan Kredi</p>
+                <p id="dash-credit" class="text-5xl font-bold text-yellow-400 mt-2 relative z-10">0</p>
+            </div>
+            <div class="bg-zinc-900 p-8 rounded-3xl flex items-center border border-zinc-800">
+                <button onclick="izleReklam()" class="w-full py-4 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-2xl transition shadow-[0_0_20px_rgba(245,158,11,0.2)]">
+                    <i class="fas fa-play-circle mr-2"></i> Reklam İzle +10 Kredi
                 </button>
-                <button onclick="logout()" class="px-6 py-3 border border-red-500/30 text-red-400 hover:bg-red-500/10 rounded-2xl">Çıkış Yap</button>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="bg-zinc-900 rounded-3xl p-8 card-hover">
-                <p class="text-emerald-400">E-posta</p>
-                <p id="dash-email" class="font-mono text-lg break-all"></p>
-                <p class="mt-6 text-emerald-400">Abonelik</p>
-                <p id="dash-sub" class="font-semibold text-2xl"></p>
-                <p class="mt-6 text-emerald-400">Kalan Kredi</p>
-                <p id="dash-credit" class="text-5xl font-bold text-yellow-400"></p>
+        <div class="mt-10 flex gap-4">
+            <button onclick="logout()" class="px-6 py-3 border border-red-500/30 hover:bg-red-500/10 text-red-400 rounded-2xl transition">Çıkış Yap</button>
+        </div>
+    </div>
+
+    <!-- PLANS (ABONELİKLER) -->
+    <div id="plans-section" class="hidden py-20 max-w-7xl mx-auto px-6">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl font-bold mb-4">Aylık Abonelik Planları</h2>
+            <p class="text-zinc-400 text-lg">İhtiyacınıza en uygun planı seçin. Satın alımlar şimdilik sadece uygulama içinden yapılmaktadır.</p>
+        </div>
+        
+        <div class="grid md:grid-cols-3 gap-8">
+            <!-- Eko Paket -->
+            <div class="bg-zinc-900 border border-zinc-800 p-8 rounded-3xl flex flex-col">
+                <h3 class="text-2xl font-bold text-emerald-400">Eko Paket</h3>
+                <p class="text-zinc-400 mt-2 mb-8">Temel coğrafi analizler ve başlangıç seviyesi özellikler için ideal aylık paket.</p>
+                <div class="mt-auto pt-8 border-t border-zinc-800">
+                    <button disabled class="w-full py-4 bg-zinc-800 text-zinc-500 rounded-2xl cursor-not-allowed font-medium">Uygulama İçinden Alınabilir</button>
+                </div>
             </div>
 
-            <div class="md:col-span-2 bg-zinc-900 rounded-3xl p-8 card-hover">
-                <h3 class="text-xl font-semibold mb-6">Hızlı İşlemler</h3>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <button onclick="startAnalysis()" class="h-32 bg-gradient-to-br from-emerald-600 to-teal-600 rounded-3xl p-6 text-left hover:brightness-110">
-                        <span class="text-3xl">📊</span><br>
-                        <span class="font-semibold text-lg">Yeni Analiz Başlat</span>
-                    </button>
-                    <button onclick="changePasswordModal()" class="h-32 bg-zinc-800 hover:bg-zinc-700 rounded-3xl p-6 text-left">
-                        <span class="text-3xl">🔑</span><br>
-                        <span class="font-semibold text-lg">Şifre Değiştir</span>
-                    </button>
+            <!-- Normal Paket -->
+            <div class="bg-zinc-900 border border-emerald-500/50 p-8 rounded-3xl flex flex-col relative transform md:-translate-y-4 shadow-[0_0_30px_rgba(16,185,129,0.15)]">
+                <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-emerald-500 text-zinc-950 px-6 py-1 rounded-full text-sm font-bold tracking-wide">EN ÇOK TERCİH EDİLEN</div>
+                <h3 class="text-2xl font-bold text-emerald-400">Normal Paket</h3>
+                <p class="text-zinc-400 mt-2 mb-8">Gelişmiş analiz araçları ve daha yüksek işlem limiti sunan standart aylık paket.</p>
+                <div class="mt-auto pt-8 border-t border-zinc-800">
+                    <button disabled class="w-full py-4 bg-zinc-800 text-zinc-500 rounded-2xl cursor-not-allowed font-medium">Uygulama İçinden Alınabilir</button>
+                </div>
+            </div>
+
+            <!-- Premium Paket -->
+            <div class="bg-zinc-900 border border-zinc-800 p-8 rounded-3xl flex flex-col">
+                <h3 class="text-2xl font-bold text-amber-400">Premium Paket</h3>
+                <p class="text-zinc-400 mt-2 mb-8">Sınırsız güç, öncelikli işlem sırası ve tüm profesyonel özellikler için aylık paket.</p>
+                <div class="mt-auto pt-8 border-t border-zinc-800">
+                    <button disabled class="w-full py-4 bg-zinc-800 text-zinc-500 rounded-2xl cursor-not-allowed font-medium">Uygulama İçinden Alınabilir</button>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Abonelik Planları -->
-        <div class="mt-16">
-            <h2 class="text-3xl font-semibold mb-8 text-center">Abonelik Planları</h2>
-            <div class="grid md:grid-cols-3 gap-6" id="plans-container"></div>
+    <!-- DOWNLOAD (İNDİRME) -->
+    <div id="download-section" class="hidden py-32 text-center max-w-4xl mx-auto px-6">
+        <div class="w-20 h-20 bg-emerald-500/10 text-emerald-500 rounded-3xl flex items-center justify-center text-4xl mx-auto mb-8">
+            <i class="fas fa-rocket"></i>
         </div>
-    </div>
-
-    <!-- PLANS SECTION -->
-    <div id="plans-section" class="hidden max-w-6xl mx-auto px-6 py-20">
-        <h2 class="text-5xl title-font font-bold text-center mb-16">Planlarımızı İncele</h2>
-        <div class="grid md:grid-cols-3 gap-8" id="standalone-plans"></div>
-    </div>
-
-    <!-- DOWNLOAD SECTION -->
-    <div id="download-section" class="hidden max-w-4xl mx-auto px-6 py-20 text-center">
-        <h2 class="text-5xl title-font font-bold mb-8">Uygulamayı İndir</h2>
-        <button onclick="fakeDownload()" class="inline-flex items-center gap-4 bg-white text-black px-10 py-6 rounded-3xl text-xl font-semibold hover:scale-105 transition">
-            <i class="fab fa-google-play text-5xl"></i>
-            <div>Google Play'den İndir</div>
-        </button>
-    </div>
-
-    <!-- Password Reset Modal -->
-    <div id="password-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-[110]">
-        <div class="bg-zinc-900 rounded-3xl p-8 max-w-md w-full mx-4">
-            <h3 class="text-xl mb-6">Şifre Değiştir</h3>
-            <input id="change-email" type="email" class="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4 mb-4" placeholder="E-posta">
-            <button onclick="sendPasswordReset()" class="w-full py-4 bg-emerald-600 rounded-2xl">Doğrulama Linki Gönder</button>
-            <button onclick="hidePasswordModal()" class="w-full mt-3 py-3 text-zinc-400">İptal</button>
-        </div>
+        <h2 class="text-5xl font-bold mb-6">Uygulamayı Hemen İndirin</h2>
+        <p class="text-xl text-zinc-400 mb-12">Geoanalyst sistemine kayıt olmak ve analizlere başlamak için uygulamamızı GitHub üzerinden güvenle indirebilirsiniz.</p>
+        
+        <a href="https://github.com/Dogukans16/Geoanalyst" target="_blank" class="inline-flex items-center gap-4 px-10 py-5 bg-white text-black hover:bg-zinc-200 transition rounded-2xl font-bold text-xl shadow-xl">
+            <i class="fab fa-github text-3xl"></i>
+            GitHub'dan İndir
+        </a>
     </div>
 
     <script>
         const SUPABASE_URL = "https://dkmwtyncxxmgotepgjxr.supabase.co";
-        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRrbXd0eW5jeHhtZ290ZXBnanhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM5NTI4NTMsImV4cCI6MjA5OTUyODg1M30.jWgHdwD62RmDIwna2p7IINOsYePsmCvsg1I3-it40YI";
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
+        // DİKKAT: Buraya SADECE 'anon' public anahtarını yaz.
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRrbXd0eW5jeHhtZ290ZXBnanhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM5NTI4NTMsImV4cCI6MjA5OTUyODg1M30.jWgHdwD62RmDIwna2p7IINOsYePsmCvsg1I3-it40YI"; 
+        
+        const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         let currentUser = null;
-        let isLoginMode = true;
+
+        // --- ADBLOCK ENGELLEYİCİ SİSTEMİ (STRICT) ---
+        window.addEventListener('load', async function() {
+            try {
+                // Yaygın bir reklam scriptine görünmez bir istek atıyoruz
+                await fetch('https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js', {
+                    method: 'HEAD',
+                    mode: 'no-cors',
+                    cache: 'no-store'
+                });
+            } catch (error) {
+                // İstek başarısız olursa (Adblock engellediyse) kilit ekranını aç
+                document.getElementById('adblock-overlay').classList.remove('hidden');
+                document.body.style.overflow = 'hidden'; // Arka planın kaydırılmasını durdur
+            }
+        });
 
         function showSection(section) {
             document.querySelectorAll('#home-section, #dashboard-section, #plans-section, #download-section').forEach(el => el.classList.add('hidden'));
-            document.getElementById(section + '-section').classList.remove('hidden');
+            const target = document.getElementById(section + '-section');
+            if (target) target.classList.remove('hidden');
+            window.scrollTo(0,0);
         }
 
         function showAuthModal() {
             document.getElementById('auth-modal').classList.remove('hidden');
-            isLoginMode = true;
-            updateAuthUI();
         }
 
-        function hideAuthModal() {
-            document.getElementById('auth-modal').classList.add('hidden');
-        }
-
-        function updateAuthUI() {
-            document.getElementById('modal-title').textContent = isLoginMode ? 'Giriş Yap' : 'Kayıt Ol';
-            document.getElementById('main-auth-btn').textContent = isLoginMode ? 'Giriş Yap' : 'Kayıt Ol';
-            document.getElementById('switch-btn').textContent = isLoginMode ? 'Hesabın yok mu? Kayıt Ol' : 'Zaten hesabın var mı? Giriş Yap';
-        }
-
-        function toggleAuthMode() {
-            isLoginMode = !isLoginMode;
-            updateAuthUI();
+        function updateNavbar() {
+            const navAuth = document.getElementById('nav-auth');
+            if (currentUser) {
+                navAuth.innerHTML = `
+                    <div class="flex items-center gap-4">
+                        <span class="text-sm text-zinc-400 hidden sm:inline">${currentUser.email}</span>
+                        <button onclick="showSection('dashboard')" class="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-xl text-sm font-medium transition">Panelim</button>
+                        <button onclick="logout()" class="px-4 py-2 bg-red-950/50 hover:bg-red-900/50 text-red-400 border border-red-900 rounded-xl text-sm font-medium transition">Çıkış</button>
+                    </div>
+                `;
+            } else {
+                navAuth.innerHTML = `
+                    <button onclick="showAuthModal()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 rounded-xl text-sm font-semibold transition">Giriş Yap</button>
+                `;
+            }
         }
 
         async function handleAuth() {
             const email = document.getElementById('modal-email').value.trim();
-            const password = document.getElementById('modal-password').value.trim();
+            const password = document.getElementById('modal-password').value;
 
-            if (!email || !password) return alert("E-posta ve şifre gereklidir!");
+            if (!email || !password) {
+                alert("Lütfen e-posta ve şifrenizi girin.");
+                return;
+            }
 
             try {
-                if (isLoginMode) {
-                    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-                    if (error) throw error;
-                    currentUser = data.user;
-                    hideAuthModal();
-                    loadDashboard();
-                } else {
-                    const { error } = await supabase.auth.signUp({ email, password });
-                    if (error) throw error;
-                    await supabase.from('Kullanıcılar').insert([{ email, abonelik_tipi: 'Normal', kalan_kredi: 20 }]);
-                    alert("Kayıt başarılı! E-postanı kontrol et ve hesabı doğrula.");
-                    hideAuthModal();
-                }
-            } catch (e) {
-                alert("Hata: " + e.message);
+                const { data, error } = await sb.auth.signInWithPassword({email, password});
+                if (error) throw error;
+                currentUser = data.user;
+                
+                document.getElementById('auth-modal').classList.add('hidden');
+                updateNavbar();
+                await loadDashboard();
+            } catch(e) { 
+                alert("Giriş Başarısız: E-posta veya şifre hatalı olabilir."); 
             }
         }
 
         async function loadDashboard() {
             if (!currentUser) return;
-            showSection('dashboard');
-            document.getElementById('nav-auth').innerHTML = `<button onclick="logout()" class="px-5 py-2 border border-red-500 text-red-400 rounded-2xl">Çıkış</button>`;
-
-            const { data: profile } = await supabase.from('Kullanıcılar').select('*').eq('email', currentUser.email).single();
-
-            document.getElementById('dash-email').textContent = currentUser.email;
+            
             document.getElementById('dash-name').textContent = currentUser.email.split('@')[0];
-            document.getElementById('dash-sub').textContent = profile?.abonelik_tipi || 'Normal';
-            document.getElementById('dash-credit').textContent = profile?.kalan_kredi || 0;
+            document.getElementById('dash-email').textContent = currentUser.email;
 
-            renderPlans('plans-container');
-        }
+            try {
+                const { data, error } = await sb.from('Kullanıcılar')
+                    .select('*')
+                    .eq('id', currentUser.id)
+                    .maybeSingle();
 
-        async function logout() {
-            await supabase.auth.signOut();
-            currentUser = null;
-            showSection('home');
-        }
+                if (error) throw error;
 
-        async function watchAdForCredit() {
-            if (!currentUser) return;
-            if (!confirm("Reklam izleyip 10 kredi kazanmak istiyor musun?")) return;
-
-            const { data: profile } = await supabase.from('Kullanıcılar').select('kalan_kredi').eq('email', currentUser.email).single();
-            const newCredit = (profile?.kalan_kredi || 0) + 10;
-
-            await supabase.from('Kullanıcılar').update({ kalan_kredi: newCredit }).eq('email', currentUser.email);
-            alert(`+10 kredi eklendi! Yeni bakiye: ${newCredit}`);
-            loadDashboard();
-        }
-
-        function startAnalysis() {
-            alert("Analiz başlatılıyor... (1 kredi düşecek - yakında tam entegre olacak)");
-        }
-
-        function changePasswordModal() {
-            document.getElementById('password-modal').classList.remove('hidden');
-            document.getElementById('change-email').value = currentUser?.email || '';
-        }
-
-        function hidePasswordModal() {
-            document.getElementById('password-modal').classList.add('hidden');
-        }
-
-        async function sendPasswordReset() {
-            const email = document.getElementById('change-email').value.trim();
-            if (!email) return alert("E-posta giriniz");
-            const { error } = await supabase.auth.resetPasswordForEmail(email);
-            if (error) alert(error.message);
-            else alert("Şifre sıfırlama linki e-postana gönderildi!");
-            hidePasswordModal();
-        }
-
-        function resetPassword() {
-            const email = document.getElementById('modal-email').value.trim();
-            if (email) sendPasswordReset();
-            else alert("Önce e-posta girin");
-        }
-
-        function renderPlans(containerId) {
-            const html = `
-                <div class="bg-zinc-900 rounded-3xl p-8 card-hover">Ekonomik<br><button onclick="subscribe('Ekonomik')" class="mt-4 w-full py-3 border">Satın Al</button></div>
-                <div class="bg-zinc-900 rounded-3xl p-8 card-hover border-2 border-emerald-500">Normal (Popüler)<br><button onclick="subscribe('Normal')" class="mt-4 w-full py-3 bg-emerald-600">Satın Al</button></div>
-                <div class="bg-zinc-900 rounded-3xl p-8 card-hover">Premium<br><button onclick="subscribe('Premium')" class="mt-4 w-full py-3 border">Satın Al</button></div>
-            `;
-            document.getElementById(containerId).innerHTML = html;
-        }
-
-        function subscribe(plan) {
-            alert(plan + " planı için ödeme sayfasına yönlendiriliyorsun (yakında eklenecek)");
-        }
-
-        function fakeDownload() {
-            alert("Google Play'e yönlendiriliyorsun (Simülasyon)");
-        }
-
-        async function init() {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (session) {
-                currentUser = session.user;
-                loadDashboard();
-            } else {
+                if (data) {
+                    document.getElementById('dash-credit').textContent = data.kalan_kredi !== undefined ? data.kalan_kredi : 0;
+                    document.getElementById('dash-sub').textContent = data.abonelik_tipi || 'Eko';
+                }
+                
+                showSection('dashboard');
+            } catch (err) {
+                console.error("Panel yüklenirken hata alındı:", err);
+                alert("Profil bilgileri çekilemedi.");
                 showSection('home');
             }
         }
 
-        window.onload = init;
+        function izleReklam() {
+            alert('Reklam sistemi masaüstü uygulamasında aktif olacaktır. Lütfen uygulamayı indirin.');
+        }
+
+        function logout() {
+            sb.auth.signOut();
+            currentUser = null;
+            updateNavbar();
+            showSection('home');
+            window.location.reload();
+        }
+
+        window.onload = async () => {
+            updateNavbar();
+            try {
+                const { data: { session } } = await sb.auth.getSession();
+                if (session) {
+                    currentUser = session.user;
+                    updateNavbar();
+                    await loadDashboard();
+                }
+            } catch (e) {
+                console.log("Oturum kontrol hatası:", e);
+            }
+        };
     </script>
 </body>
 </html>
